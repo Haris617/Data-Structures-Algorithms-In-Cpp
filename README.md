@@ -31,6 +31,5 @@ Wanna contribute but don’t know Git? No worries — here’s how to do it **us
 ### 3️⃣ Create Pull Request (PR)
 - GitHub shows **“Compare & Pull Request”** → click it.
 - Add a short title and description of what you did.
-- Example:
 
 

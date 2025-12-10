@@ -1,190 +1,229 @@
 #include <iostream>
 using namespace std;
 
+struct node
+{
+    int data;
+    node* left;
+    node* right;
+
+    node()
+    {
+        data = 0;
+        left = right = nullptr;
+    }
+
+    node(int data)
+    {
+        this->data = data;
+        left = right = nullptr;
+    }
+};
+
 struct BST
 {
-	int data;
-	BST* left;
-	BST* right;
+    node* root;
 
-	BST()
-	{
-		data = 0;
-		left = right = nullptr;
-	}
+    BST()
+    {
+        root = nullptr;
+    }
 
-	BST* insert(BST* root, int data)
-	{
-		if (!root)
-		{
-			BST* t = new BST;
-			t->data = data;
-			root = t;
-		}
+    node* insert(node* root, int data)
+    {
+        if(!root)
+        {
+            node* n = new node(data);
+            return n;
+        }
 
-		if (data < root->data)
-		{
-			root->left = insert(root->left, data);
-		}
+        if(data > root->data)
+        {
+            root->right = insert(root->right, data);
+        }
 
-		if (data > root->data)
-		{
-			root->right = insert(root->right, data);
-		}
+        else if(data < root->data)
+        {
+            root->left = insert(root->left, data);
+        }
 
-		return root;
-	}
+        return root;
+    }
 
-	void inOrder(BST* root)
-	{
-		if (!root)
-		{
-			return;
-		}
+    void insert(int data)
+    {
+        root = insert(root, data);
+    }
 
-		inOrder(root->left);
-		cout << root->data << " ";
-		inOrder(root->right);
-	}
+    void display(node* root)
+    {
+        if(!root) return;
 
-	void preOrder(BST* root)
-	{
-		if (!root)
-		{
-			return;
-		}
+        cout << root->data << " ";
+        display(root->left);
+        display(root->right);
+    }
 
-		cout << root->data << " ";
-		preOrder(root->left);
-		preOrder(root->right);
-	}
+    node* deleteNode(node* root, int data)
+    {
+        if(!root) return nullptr;
 
-	void postOrder(BST* root)
-	{
-		if (!root)
-		{
-			return;
-		}
+        if(data > root->data)
+        {
+            root->right = deleteNode(root->right, data);
+        }
 
-		postOrder(root->left);
-		postOrder(root->right);
-		cout << root->data << " ";
-	}
+        else if(data < root->data)
+        {
+            root->left = deleteNode(root->left, data);
+        }
 
-	void search(BST* root, int data)
-	{
-		if (!root)
-		{
-			cout << "Value not Found" << endl;
-			return;
-		}
+        else
+        {
+            // no child
+            if(!root->left && !root->right)
+            {
+                delete root;
+                return nullptr;
+            }
+            // no left child
+            else if(!root->left)
+            {
+                node* temp = root->right;
+                delete root;
+                return temp;
+            }
+            // no right child
+            else if(!root->right)
+            {
+                node* temp = root->left;
+                delete root;
+                return temp;
+            }
+            // both children
+            else
+            {
+                node* temp = root->right;
+                while(temp->left) temp = temp->left; // inorder successor
+                root->data = temp->data;
+                root->right = deleteNode(root->right, temp->data); // assign back
+            }
+        }
 
-		if (data == root->data)
-		{
-			cout << "Found: " << root->data << endl;
-			return;
-		}
-		else if (data < root->data)
-		{
-			search(root->left, data);
-		}
-		else
-		{
-			search(root->right, data);
-		}
-	}
+        return root;
+    }
 
-	int LowestValue(BST* root)
-	{
-		if (!root)
-		{
-			cout << "Tree is Empty" << endl;
-			return -1;
-		}
+    // Traversals
+    void inOrder(node* root)
+    {
+        if(!root) return;
+        inOrder(root->left);
+        cout << root->data << " ";
+        inOrder(root->right);
+    }
 
-		BST* current = root;
+    void preOrder(node* root)
+    {
+        if(!root) return;
+        cout << root->data << " ";
+        preOrder(root->left);
+        preOrder(root->right);
+    }
 
-		while (current->left)
-		{
-			current = current->left;
-		}
+    void postOrder(node* root)
+    {
+        if(!root) return;
+        postOrder(root->left);
+        postOrder(root->right);
+        cout << root->data << " ";
+    }
 
-		return current->data;
-	}
+    // Search
+    void search(node* root, int data)
+    {
+        if(!root)
+        {
+            cout << "Value not Found" << endl;
+            return;
+        }
 
-	int GreatestValue(BST* root)
-	{
-		if (!root)
-		{
-			cout << "Tree is Empty" << endl;
-			return -1;
-		}
+        if(data == root->data)
+        {
+            cout << "Found: " << root->data << endl;
+        }
 
-		BST* current = root;
+        else if(data < root->data)
+        {
+            search(root->left, data);
+        }
+        
+        else
+        {
+            search(root->right, data);
+        }
+    }
 
-		while (current->right)
-		{
-			current = current->right;
-		}
+    // Lowest value
+    int LowestValue(node* root)
+    {
+        if(!root)
+        {
+            cout << "Tree is empty" << endl;
+            return -1;
+        }
 
-		return current->data;
-	}
+        node* current = root;
+        while(current->left) current = current->left;
+        return current->data;
+    }
 
+    // Greatest value
+    int GreatestValue(node* root)
+    {
+        if(!root)
+        {
+            cout << "Tree is empty" << endl;
+            return -1;
+        }
+
+        node* current = root;
+        while(current->right) current = current->right;
+        return current->data;
+    }
 };
 
 int main()
 {
-	BST* rootT1 = nullptr;
-	BST t1;
+    BST t1;
 
-	rootT1 = t1.insert(rootT1, 10);
+    t1.insert(10);
+    t1.insert(20);
+    t1.insert(30);
+    t1.insert(-20);
+    t1.insert(-30);
 
-	t1.insert(rootT1, 8);
-	t1.insert(rootT1, 6);
-	t1.insert(rootT1, 4);
-	t1.insert(rootT1, 2);
+    cout << "Original BST (PreOrder): ";
+    t1.display(t1.root);
+    cout << endl;
 
-	t1.insert(rootT1, 12);
-	t1.insert(rootT1, 14);
-	t1.insert(rootT1, 16);
-	t1.insert(rootT1, 18);
+    t1.root = t1.deleteNode(t1.root, 10);
+    cout << "After deleting 10: ";
+    t1.display(t1.root);
+    cout << endl;
 
-	t1.insert(rootT1, 9);
-	t1.insert(rootT1, 7);
-	t1.insert(rootT1, 5);
-	t1.insert(rootT1, 3);
+    cout << "InOrder traversal: ";
+    t1.inOrder(t1.root);
+    cout << endl;
 
-	t1.insert(rootT1, 9);
-	t1.insert(rootT1, 7);
-	t1.insert(rootT1, 5);
-	t1.insert(rootT1, 3);
+    cout << "PostOrder traversal: ";
+    t1.postOrder(t1.root);
+    cout << endl;
 
-	t1.insert(rootT1, 11);
-	t1.insert(rootT1, 13);
-	t1.insert(rootT1, 15);
-	t1.insert(rootT1, 17);
+    t1.search(t1.root, 20);
+    t1.search(t1.root, 100);
 
+    cout << "Lowest Value: " << t1.LowestValue(t1.root) << endl;
+    cout << "Greatest Value: " << t1.GreatestValue(t1.root) << endl;
 
-	cout <<   "PreOrder  : " << endl;
-	t1.preOrder(rootT1);
-
-	cout << "\nPostOrder : " << endl;
-	t1.postOrder(rootT1);
-
-	cout << "\ninOrder   : " << endl;
-	t1.inOrder(rootT1);
-
-	cout << endl << endl;
-
-	t1.search(rootT1, 10);
-	t1.search(rootT1, 15);
-	t1.search(rootT1, 99);
-
-	cout << endl << endl;
-
-	cout << "Greatest Value is : " << t1.GreatestValue(rootT1) << endl;
-	cout << "Lowest Value is   : " << t1.LowestValue(rootT1)   << endl;
-
-
-	return 0;
+    return 0;
 }

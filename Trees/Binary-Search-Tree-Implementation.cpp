@@ -16,7 +16,7 @@ struct node
     node(int data)
     {
         this->data = data;
-        left = right = nullptr; // keep style consistent
+        left = right = nullptr;
     }
 };
 
@@ -33,10 +33,8 @@ struct BST
     {
         if(!root)
         {
-            node* n = new node;
-            n->data = data;
-            root = n;
-            return root;
+            node* n = new node(data);
+            return n;
         }
 
         if(data > root->data)
@@ -62,17 +60,13 @@ struct BST
         if(!root) return;
 
         cout << root->data << " ";
-
         display(root->left);
         display(root->right);
     }
 
     node* deleteNode(node* root, int data)
     {
-        if(!root)
-        {
-            return nullptr;
-        }
+        if(!root) return nullptr;
 
         if(data > root->data)
         {
@@ -83,7 +77,7 @@ struct BST
         {
             root->left = deleteNode(root->left, data);
         }
-        
+
         else
         {
             // no child
@@ -92,7 +86,6 @@ struct BST
                 delete root;
                 return nullptr;
             }
-
             // no left child
             else if(!root->left)
             {
@@ -100,7 +93,6 @@ struct BST
                 delete root;
                 return temp;
             }
-
             // no right child
             else if(!root->right)
             {
@@ -108,7 +100,6 @@ struct BST
                 delete root;
                 return temp;
             }
-
             // both children
             else
             {
@@ -120,6 +111,84 @@ struct BST
         }
 
         return root;
+    }
+
+    // Traversals
+    void inOrder(node* root)
+    {
+        if(!root) return;
+        inOrder(root->left);
+        cout << root->data << " ";
+        inOrder(root->right);
+    }
+
+    void preOrder(node* root)
+    {
+        if(!root) return;
+        cout << root->data << " ";
+        preOrder(root->left);
+        preOrder(root->right);
+    }
+
+    void postOrder(node* root)
+    {
+        if(!root) return;
+        postOrder(root->left);
+        postOrder(root->right);
+        cout << root->data << " ";
+    }
+
+    // Search
+    void search(node* root, int data)
+    {
+        if(!root)
+        {
+            cout << "Value not Found" << endl;
+            return;
+        }
+
+        if(data == root->data)
+        {
+            cout << "Found: " << root->data << endl;
+        }
+
+        else if(data < root->data)
+        {
+            search(root->left, data);
+        }
+        
+        else
+        {
+            search(root->right, data);
+        }
+    }
+
+    // Lowest value
+    int LowestValue(node* root)
+    {
+        if(!root)
+        {
+            cout << "Tree is empty" << endl;
+            return -1;
+        }
+
+        node* current = root;
+        while(current->left) current = current->left;
+        return current->data;
+    }
+
+    // Greatest value
+    int GreatestValue(node* root)
+    {
+        if(!root)
+        {
+            cout << "Tree is empty" << endl;
+            return -1;
+        }
+
+        node* current = root;
+        while(current->right) current = current->right;
+        return current->data;
     }
 };
 
@@ -133,24 +202,28 @@ int main()
     t1.insert(-20);
     t1.insert(-30);
 
-    cout << "Original BST: ";
+    cout << "Original BST (PreOrder): ";
     t1.display(t1.root);
     cout << endl;
 
-    t1.root = t1.deleteNode(t1.root, 10); // update root
+    t1.root = t1.deleteNode(t1.root, 10);
     cout << "After deleting 10: ";
     t1.display(t1.root);
     cout << endl;
 
-    t1.root = t1.deleteNode(t1.root, 20);
-    cout << "After deleting 20: ";
-    t1.display(t1.root);
+    cout << "InOrder traversal: ";
+    t1.inOrder(t1.root);
     cout << endl;
 
-    t1.root = t1.deleteNode(t1.root, -30);
-    cout << "After deleting -30: ";
-    t1.display(t1.root);
+    cout << "PostOrder traversal: ";
+    t1.postOrder(t1.root);
     cout << endl;
+
+    t1.search(t1.root, 20);
+    t1.search(t1.root, 100);
+
+    cout << "Lowest Value: " << t1.LowestValue(t1.root) << endl;
+    cout << "Greatest Value: " << t1.GreatestValue(t1.root) << endl;
 
     return 0;
 }

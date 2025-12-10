@@ -1,190 +1,156 @@
 #include <iostream>
 using namespace std;
 
+struct node
+{
+    int data;
+    node* left;
+    node* right;
+
+    node()
+    {
+        data = 0;
+        left = right = nullptr;
+    }
+
+    node(int data)
+    {
+        this->data = data;
+        left = right = nullptr; // keep style consistent
+    }
+};
+
 struct BST
 {
-	int data;
-	BST* left;
-	BST* right;
+    node* root;
 
-	BST()
-	{
-		data = 0;
-		left = right = nullptr;
-	}
+    BST()
+    {
+        root = nullptr;
+    }
 
-	BST* insert(BST* root, int data)
-	{
-		if (!root)
-		{
-			BST* t = new BST;
-			t->data = data;
-			root = t;
-		}
+    node* insert(node* root, int data)
+    {
+        if(!root)
+        {
+            node* n = new node;
+            n->data = data;
+            root = n;
+            return root;
+        }
 
-		if (data < root->data)
-		{
-			root->left = insert(root->left, data);
-		}
+        if(data > root->data)
+        {
+            root->right = insert(root->right, data);
+        }
 
-		if (data > root->data)
-		{
-			root->right = insert(root->right, data);
-		}
+        else if(data < root->data)
+        {
+            root->left = insert(root->left, data);
+        }
 
-		return root;
-	}
+        return root;
+    }
 
-	void inOrder(BST* root)
-	{
-		if (!root)
-		{
-			return;
-		}
+    void insert(int data)
+    {
+        root = insert(root, data);
+    }
 
-		inOrder(root->left);
-		cout << root->data << " ";
-		inOrder(root->right);
-	}
+    void display(node* root)
+    {
+        if(!root) return;
 
-	void preOrder(BST* root)
-	{
-		if (!root)
-		{
-			return;
-		}
+        cout << root->data << " ";
 
-		cout << root->data << " ";
-		preOrder(root->left);
-		preOrder(root->right);
-	}
+        display(root->left);
+        display(root->right);
+    }
 
-	void postOrder(BST* root)
-	{
-		if (!root)
-		{
-			return;
-		}
+    node* deleteNode(node* root, int data)
+    {
+        if(!root)
+        {
+            return nullptr;
+        }
 
-		postOrder(root->left);
-		postOrder(root->right);
-		cout << root->data << " ";
-	}
+        if(data > root->data)
+        {
+            root->right = deleteNode(root->right, data);
+        }
 
-	void search(BST* root, int data)
-	{
-		if (!root)
-		{
-			cout << "Value not Found" << endl;
-			return;
-		}
+        else if(data < root->data)
+        {
+            root->left = deleteNode(root->left, data);
+        }
+        
+        else
+        {
+            // no child
+            if(!root->left && !root->right)
+            {
+                delete root;
+                return nullptr;
+            }
 
-		if (data == root->data)
-		{
-			cout << "Found: " << root->data << endl;
-			return;
-		}
-		else if (data < root->data)
-		{
-			search(root->left, data);
-		}
-		else
-		{
-			search(root->right, data);
-		}
-	}
+            // no left child
+            else if(!root->left)
+            {
+                node* temp = root->right;
+                delete root;
+                return temp;
+            }
 
-	int LowestValue(BST* root)
-	{
-		if (!root)
-		{
-			cout << "Tree is Empty" << endl;
-			return -1;
-		}
+            // no right child
+            else if(!root->right)
+            {
+                node* temp = root->left;
+                delete root;
+                return temp;
+            }
 
-		BST* current = root;
+            // both children
+            else
+            {
+                node* temp = root->right;
+                while(temp->left) temp = temp->left; // inorder successor
+                root->data = temp->data;
+                root->right = deleteNode(root->right, temp->data); // assign back
+            }
+        }
 
-		while (current->left)
-		{
-			current = current->left;
-		}
-
-		return current->data;
-	}
-
-	int GreatestValue(BST* root)
-	{
-		if (!root)
-		{
-			cout << "Tree is Empty" << endl;
-			return -1;
-		}
-
-		BST* current = root;
-
-		while (current->right)
-		{
-			current = current->right;
-		}
-
-		return current->data;
-	}
-
+        return root;
+    }
 };
 
 int main()
 {
-	BST* rootT1 = nullptr;
-	BST t1;
+    BST t1;
 
-	rootT1 = t1.insert(rootT1, 10);
+    t1.insert(10);
+    t1.insert(20);
+    t1.insert(30);
+    t1.insert(-20);
+    t1.insert(-30);
 
-	t1.insert(rootT1, 8);
-	t1.insert(rootT1, 6);
-	t1.insert(rootT1, 4);
-	t1.insert(rootT1, 2);
+    cout << "Original BST: ";
+    t1.display(t1.root);
+    cout << endl;
 
-	t1.insert(rootT1, 12);
-	t1.insert(rootT1, 14);
-	t1.insert(rootT1, 16);
-	t1.insert(rootT1, 18);
+    t1.root = t1.deleteNode(t1.root, 10); // update root
+    cout << "After deleting 10: ";
+    t1.display(t1.root);
+    cout << endl;
 
-	t1.insert(rootT1, 9);
-	t1.insert(rootT1, 7);
-	t1.insert(rootT1, 5);
-	t1.insert(rootT1, 3);
+    t1.root = t1.deleteNode(t1.root, 20);
+    cout << "After deleting 20: ";
+    t1.display(t1.root);
+    cout << endl;
 
-	t1.insert(rootT1, 9);
-	t1.insert(rootT1, 7);
-	t1.insert(rootT1, 5);
-	t1.insert(rootT1, 3);
+    t1.root = t1.deleteNode(t1.root, -30);
+    cout << "After deleting -30: ";
+    t1.display(t1.root);
+    cout << endl;
 
-	t1.insert(rootT1, 11);
-	t1.insert(rootT1, 13);
-	t1.insert(rootT1, 15);
-	t1.insert(rootT1, 17);
-
-
-	cout <<   "PreOrder  : " << endl;
-	t1.preOrder(rootT1);
-
-	cout << "\nPostOrder : " << endl;
-	t1.postOrder(rootT1);
-
-	cout << "\ninOrder   : " << endl;
-	t1.inOrder(rootT1);
-
-	cout << endl << endl;
-
-	t1.search(rootT1, 10);
-	t1.search(rootT1, 15);
-	t1.search(rootT1, 99);
-
-	cout << endl << endl;
-
-	cout << "Greatest Value is : " << t1.GreatestValue(rootT1) << endl;
-	cout << "Lowest Value is   : " << t1.LowestValue(rootT1)   << endl;
-
-
-	return 0;
+    return 0;
 }

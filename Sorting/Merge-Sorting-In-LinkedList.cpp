@@ -1,45 +1,94 @@
-Node* getMiddle(Node* head) {
-    if (!head) return head;
+#include <iostream>
+using namespace std;
+
+struct Node {
+    int data;
+    Node* next;
+};
+
+Node* newNode(int val)
+{
+    Node* n = new Node();
+    n->data = val;
+    n->next = NULL;
+    return n;
+}
+
+// Split list into two halves
+Node* split(Node* head)
+{
+    if (!head || !head->next)
+        return NULL;
+
     Node* slow = head;
     Node* fast = head->next;
 
-    while (fast && fast->next) {
+    while (fast && fast->next)
+    {
         slow = slow->next;
         fast = fast->next->next;
     }
-    return slow;
+
+    Node* second = slow->next;
+    slow->next = NULL;
+
+    return second;
 }
 
-// Merge two sorted linked lists
-Node* merge(Node* left, Node* right) {
-    if (!left) return right;
-    if (!right) return left;
+// Merge two sorted lists
+Node* merge(Node* a, Node* b)
+{
+    if (!a) return b;
+    if (!b) return a;
 
-    Node* result = nullptr;
-
-    if (left->data < right->data) {
-        result = left;
-        result->next = merge(left->next, right);
+    if (a->data < b->data)
+    {
+        a->next = merge(a->next, b);
+        return a;
     }
-    else {
-        result = right;
-        result->next = merge(left, right->next);
+    else
+    {
+        b->next = merge(a, b->next);
+        return b;
     }
-    return result;
 }
 
-// Merge sort on linked list
-Node* mergeSort(Node* head) {
+// Merge Sort
+Node* mergeSort(Node* head)
+{
     if (!head || !head->next)
         return head;
 
-    Node* middle = getMiddle(head);
-    Node* nextToMiddle = middle->next;
-    middle->next = nullptr;  // Split the list
+    Node* second = split(head);
 
-    Node* left = mergeSort(head);
-    Node* right = mergeSort(nextToMiddle);
+    head = mergeSort(head);
+    second = mergeSort(second);
 
-    Node* sortedList = merge(left, right);
-    return sortedList;
+    return merge(head, second);
+}
+
+// Print list
+void print(Node* head)
+{
+    while (head)
+    {
+        cout << head->data << " ";
+        head = head->next;
+    }
+}
+
+int main()
+{
+    Node* head = newNode(5);
+    head->next = newNode(4);
+    head->next->next = newNode(3);
+    head->next->next->next = newNode(6);
+    head->next->next->next->next = newNode(7);
+    head->next->next->next->next->next = newNode(2);
+    head->next->next->next->next->next->next = newNode(1);
+    head->next->next->next->next->next->next->next = newNode(8);
+
+    head = mergeSort(head);
+
+    print(head);
 }

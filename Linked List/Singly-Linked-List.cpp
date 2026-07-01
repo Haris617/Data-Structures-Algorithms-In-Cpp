@@ -1,236 +1,559 @@
-#include <iostream>
+#include<iostream>
 using namespace std;
 
-struct node {
-    int data;
-    node* next;
+// 1. Create Single LinkedList
+
+struct node
+{
+	int data;
+	node* next;
+
+	node(int x)
+	{
+		data = x;
+		next = nullptr;
+	}
 };
 
-node* head = nullptr;
-node* tail = nullptr;
+// 2. Insert at Head
 
-void insertAtEnd(int val) {
-    node* n = new node;
-    n->data = val;
-    n->next = nullptr;
-
-    if (head == nullptr) {
-        head = n;
-        tail = n;
-    }
-    else {
-        tail->next = n;
-        tail = n;
-    }
-    cout << "Inserted " << val << " at end" << endl;
+node* insertAtHead(node* head, int data)
+{
+	node* n = new node(data);
+	n->next = head;
+	return n; // handles both cases
 }
 
-void insertAtStart(int val) {
-    node* n = new node;
-    n->data = val;
-    n->next = nullptr;
 
-    if (head == nullptr) {
-        head = tail = n;
-    }
-    else {
-        n->next = head;
-        head = n;
-    }
-    cout << "Inserted " << val << " at start" << endl;
+// 3. Insert at End
+
+node* insertAtEnd(node* head, int data)
+{
+	node* n = new node(data);
+	
+	if (!head)
+	{
+		return n;
+	}
+
+	node* temp = head;
+
+	while (temp->next)
+	{
+		temp = temp->next;
+	}
+
+	temp->next = n;
+	return head;
 }
 
-void insertAtSpecificPosition(int position, int val) {
-    node* n = new node;
-    n->data = val;
-    n->next = nullptr;
+// 4. Delete at Head
 
-    if (position == 1) {
-        n->next = head;
-        head = n;
-        if (tail == nullptr) tail = n;
-        cout << "Inserted " << val << " at position 1" << endl;
-        return;
-    }
+node* deleteAtHead(node* head)
+{
+	if (!head)
+	{
+		return nullptr;
+	}
 
-    node* previous = head;
-    for (int i = 1; i < position - 1; i++) {
-        if (previous == nullptr) {
-            cout << "Position " << position << " is out of range" << endl;
-            delete n;
-            return;
-        }
-        previous = previous->next;
-    }
-
-    n->next = previous->next;
-    previous->next = n;
-    if (n->next == nullptr) tail = n;
-
-    cout << "Inserted " << val << " at position " << position << endl;
+	node* temp = head;
+	head = head->next;
+	delete temp;
+	return head;
 }
 
-void countNodes() {
-    node* temp = head;
-    int count = 0;
+// 5. Delete At End
 
-    while (temp != nullptr) {
-        count++;
-        temp = temp->next;
-    }
-    cout << "Total nodes: " << count << endl;
+node* deleteAtEnd(node* head)
+{
+	if (!head)
+	{
+		return nullptr;
+	}
+
+	if (!head->next)
+	{
+		delete head;
+		return nullptr;
+	}
+
+	node* temp = head;
+	while (temp->next->next)
+	{
+		temp = temp->next;
+	}
+
+	delete temp->next;
+	temp->next = nullptr;
+	return head;
+}	
+
+//6. Delete Nth Node
+
+node* deleteNthNode(node* head, int index)
+{
+	if (!head)
+	{
+		return nullptr;
+	}
+
+	if (index < 0)
+	{
+		return head;
+	}
+
+	if (index == 0)
+	{
+		node* temp = head;
+		head = head->next;
+		delete temp;
+		return head;
+	}
+
+	node* prev = head;
+
+	for (int i = 0; i < index - 1; i++)
+	{
+		if (!prev->next)
+		{
+			return head;
+		}
+
+		prev = prev->next;
+	}
+
+	node* current = prev->next;
+
+	if (!current)
+	{
+		return head;
+	}
+
+	prev->next = current->next;
+	delete current;
+
+	return head;
 }
 
-void display() {
-    node* temp = head;
+// 7. Find Middle Node
 
-    if (head == nullptr) {
-        cout << "List is empty" << endl;
-        return;
-    }
+node* middleNode(node* head)
+{
+	if (!head)
+	{
+		return nullptr;
+	}
 
-    cout << "List: ";
-    while (temp != nullptr) {
-        cout << temp->data;
-        if (temp->next != nullptr) cout << " -> ";
-        temp = temp->next;
-    }
-    cout << endl;
+	node* slow = head;
+	node* fast = head;
+
+	while (fast != nullptr && fast->next != nullptr)
+	{
+		slow = slow->next;
+		fast = fast->next->next;
+	}
+
+	return slow;
 }
 
-void searchValue(int val) {
-    node* temp = head;
-    while (temp != nullptr) {
-        if (val == temp->data) {
-            cout << "Value " << val << " found" << endl;
-            return;
-        }
-        temp = temp->next;
-    }
-    cout << "Value " << val << " not found" << endl;
+// 8. Detect Cycle (Floyd's Algorithm)
+
+bool hasCycle(node* head)
+{
+	node* slow = head;
+	node* fast = head;
+
+	while (fast != nullptr && fast->next != nullptr)
+	{
+		slow = slow->next;
+		fast = fast->next->next;
+
+		if (slow == fast)
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
-void deleteAtStart() {
-    if (head == nullptr) {
-        cout << "List is empty, nothing to delete" << endl;
-        return;
-    }
+// 9. Merging 2 Sorted List using Recursion
 
-    node* temp = head;
-    cout << "Deleted " << temp->data << " from start" << endl;
+node* merge2SortedListRecursion(node* head1, node* head2)
+{
+	if (!head1)
+	{
+		return head2;
+	}
 
-    if (head->next == nullptr) {
-        delete head;
-        head = tail = nullptr;
-    }
-    else {
-        head = head->next;
-        delete temp;
-    }
+	if (!head2)
+	{
+		return head1;
+	}
+
+	node* temp = nullptr;
+
+	if (head1->data <= head2->data)
+	{
+		temp = head1;
+		temp->next = merge2SortedListRecursion(head1->next, head2);
+	}
+
+	else
+	{
+		temp = head2;
+		temp->next = merge2SortedListRecursion(head1, head2->next);
+	}
+
+	return temp;
 }
 
-void deleteAtEnd() {
-    if (head == nullptr) {
-        cout << "List is empty, nothing to delete" << endl;
-        return;
-    }
+// 10. Merging 2 Sorted List
 
-    if (head->next == nullptr) {
-        cout << "Deleted " << head->data << " from end" << endl;
-        delete head;
-        head = tail = nullptr;
-        return;
-    }
+node* merge2SortedList(node* head1, node* head2)
+{
+	if (!head1)
+	{
+		return head2;
+	}
 
-    node* temp = head;
-    while (temp->next != tail) {
-        temp = temp->next;
-    }
-    cout << "Deleted " << tail->data << " from end" << endl;
-    delete tail;
-    tail = temp;
-    tail->next = nullptr;
+	if (!head2)
+	{
+		return head1;
+	}
+
+	node* head = nullptr;
+	node* current = nullptr;
+
+	if (head1->data <= head2->data)
+	{
+		head = head1;
+		current = head1;
+		head1 = head1->next;
+	}
+
+	else
+	{
+		head = head2;
+		current = head2;
+		head2 = head2->next;
+	}
+
+	while (head1 && head2)
+	{
+		if (head1->data <= head2->data)
+		{
+			current->next = head1;
+			head1 = head1->next;
+		}
+
+		else
+		{
+			current->next = head2;
+			head2 = head2->next;
+		}
+
+		current = current->next;
+	}
+
+	if (head1)
+	{
+		current->next = head1;
+	}
+
+	else if (head2)
+	{
+		current->next = head2;
+	}
+
+	return head;
 }
 
-void deleteAtEndnHeadOnly() {
-    if (head == nullptr) {
-        cout << "List is empty, nothing to delete" << endl;
-        return;
-    }
+// 11. Display LinkedList
 
-    if (head->next == nullptr) {
-        cout << "Deleted " << head->data << " (list is empty now)" << endl;
-        delete head;
-        head = tail = nullptr;
-        return;
-    }
+void display(node* head)
+{
+	if (!head)
+	{
+		return;
+	}
 
-    node* temp = head;
-    while (temp->next->next != nullptr) {
-        temp = temp->next;
-    }
-    cout << "Deleted " << temp->next->data << " from end" << endl;
-    delete temp->next;
-    temp->next = nullptr;
-    tail = temp;
+	node* temp = head;
+
+	while (temp)
+	{
+		cout << temp->data << " ";
+		temp = temp->next;
+	}
 }
 
-void bubbleSort() {
-    if (!head) {
-        cout << "List does not exist" << endl;
-        return;
-    }
+// 12. Get Value at Specific Position
 
-    bool swapped;
-    do {
-        node* current = head;
-        swapped = false;
-        while (current->next != nullptr) {
-            if (current->data > current->next->data) {
-                int d = current->data;
-                current->data = current->next->data;
-                current->next->data = d;
-                swapped = true;
-            }
-            current = current->next;
-        }
-    } while (swapped);
+int getValueAtSpecificPos(node* head, int index)
+{
+	if (!head || index < 0)
+	{
+		return -1;
+	}
 
-    cout << "List sorted using Bubble Sort" << endl;
+	node* current = head;
+
+	for (int i = 0; i < index; i++)
+	{
+		if (!current)
+		{
+			return -1;
+		}
+
+		current = current->next;
+	}
+
+	return current->data;
+
 }
 
-int main() {
-    insertAtEnd(20);
-    insertAtEnd(10);
-    insertAtEnd(30);
-    insertAtEnd(40);
-    display();
+//13. Search
 
-    bubbleSort();
-    display();
+bool search(node* head, int data)
+{
+	if (!head)
+	{
+		return false;
+	}
+	
+	node* current = head;
 
-    insertAtSpecificPosition(1, 5);
-    insertAtSpecificPosition(2, 14);
-    display();
+	while (current)
+	{
+		if (current->data == data)
+		{
+			return true;
+		}
 
-    insertAtStart(50);
-    insertAtStart(55);
-    insertAtStart(70);
-    display();
+		current = current->next;
+	}
 
-    deleteAtStart();
-    display();
+	return false;
+}
 
-    deleteAtEnd();
-    display();
+//14. insert at Specific Position
 
-    deleteAtEndnHeadOnly();
-    display();
+node* insertAtSpecificPos(node* head, int Data, int index)
+{
+	node* n = new node(Data);
 
-    countNodes();
+	if (index == 0)
+	{
+		n->next = head;
+		head = n;
+		return n;
+	}
 
-    searchValue(500);
-    searchValue(50);
+	node* prev = head;
 
-    return 0;
+	for (int i = 0; i < index - 1; i++)
+	{
+		if (!prev || !prev->next)
+		{
+			delete n;
+			return nullptr;    // Invalid index
+		}
+
+		prev = prev->next;
+	}
+
+	// Insert the new node
+	n->next = prev->next;
+	prev->next = n;
+
+	return head;
+}
+
+// 15. Reverse Singly Linked list
+
+node* reverseList(node* head)
+{
+	node* previous = nullptr;
+	node* current = head;
+	node* next = nullptr;
+
+	while (current)
+	{
+		next = current->next;
+		current->next = previous;
+		previous = current;
+		current = next;
+	}
+
+	head = previous;
+	return head;
+}
+
+//16. Bubble Sort
+
+void bubbleSort(node* head)
+{
+	if (!head)
+	{
+		cout << "List does not exist" << endl;
+		return;
+	}
+
+	bool swapped;
+
+	do
+	{
+		swapped = false;
+		node* current = head;
+
+		while (current->next)
+		{
+			if (current->data > current->next->data)
+			{
+				int temp = current->data;
+				current->data = current->next->data;
+				current->next->data = temp;
+
+				swapped = true;
+			}
+
+			current = current->next;
+		}
+
+	} while (swapped);
+}
+
+int main()
+{
+	node* head = nullptr;
+
+	// Insert at End
+	head = insertAtEnd(head, 10);
+	head = insertAtEnd(head, 20);
+	head = insertAtEnd(head, 30);
+	head = insertAtEnd(head, 40);
+
+	cout << "Original List: ";
+	display(head);
+	cout << endl;
+
+	// Insert at Head
+	head = insertAtHead(head, 5);
+	cout << "After Insert at Head: ";
+	display(head);
+	cout << endl;
+
+	// Insert at Specific Position
+	head = insertAtSpecificPos(head, 25, 3);
+	cout << "After Insert 25 at Index 3: ";
+	display(head);
+	cout << endl;
+
+	// Delete at Head
+	head = deleteAtHead(head);
+	cout << "After Delete at Head: ";
+	display(head);
+	cout << endl;
+
+	// Delete at End
+	head = deleteAtEnd(head);
+	cout << "After Delete at End: ";
+	display(head);
+	cout << endl;
+
+	// Delete Nth Node
+	head = deleteNthNode(head, 2);
+	cout << "After Delete Index 2: ";
+	display(head);
+	cout << endl;
+
+	// Get Value at Specific Position
+	cout << "Value at Index 1: " << getValueAtSpecificPos(head, 1) << endl;
+
+	// Search
+	cout << "Search 20: ";
+	if (search(head, 20))
+		cout << "Found\n";
+	else
+		cout << "Not Found\n";
+
+	cout << "Search 100: ";
+	if (search(head, 100))
+		cout << "Found\n";
+	else
+		cout << "Not Found\n";
+
+	// Middle Node
+	node* mid = middleNode(head);
+	if (mid)
+		cout << "Middle Node: " << mid->data << endl;
+
+	// Reverse List
+	head = reverseList(head);
+	cout << "Reversed List: ";
+	display(head);
+	cout << endl;
+
+	//Sorted List
+
+	bubbleSort(head);
+	cout << "Sorted List: ";
+	display(head);
+	cout << endl;
+
+	// Cycle Detection
+	cout << "Has Cycle? ";
+	if (hasCycle(head))
+		cout << "Yes\n";
+	else
+		cout << "No\n";
+
+	// -----------------------------
+	// Merge Two Sorted Lists
+	// -----------------------------
+
+	node* list1 = nullptr;
+	list1 = insertAtEnd(list1, 1);
+	list1 = insertAtEnd(list1, 3);
+	list1 = insertAtEnd(list1, 5);
+
+	node* list2 = nullptr;
+	list2 = insertAtEnd(list2, 2);
+	list2 = insertAtEnd(list2, 4);
+	list2 = insertAtEnd(list2, 6);
+
+	cout << "\nList 1: ";
+	display(list1);
+
+	cout << "\nList 2: ";
+	display(list2);
+
+	node* merged = merge2SortedList(list1, list2);
+
+	cout << "\nMerged List (Iterative): ";
+	display(merged);
+	cout << endl;
+
+	// -----------------------------
+	// Merge Recursively
+	// -----------------------------
+
+	node* a = nullptr;
+	a = insertAtEnd(a, 10);
+	a = insertAtEnd(a, 30);
+	a = insertAtEnd(a, 50);
+
+	node* b = nullptr;
+	b = insertAtEnd(b, 20);
+	b = insertAtEnd(b, 40);
+	b = insertAtEnd(b, 60);
+
+	node* mergedRec = merge2SortedListRecursion(a, b);
+
+	cout << "Merged List (Recursive): ";
+	display(mergedRec);
+	cout << endl;
+
+
+	return 0;
 }

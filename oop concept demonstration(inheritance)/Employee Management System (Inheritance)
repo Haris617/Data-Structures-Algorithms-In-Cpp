@@ -1,0 +1,119 @@
+
+#include <bits/stdc++.h>
+using namespace std;
+
+// Base class
+class Employee {
+protected:
+    int employeeID;
+    string name;
+    double salary;
+
+public:
+    Employee(int id, string empName, double empSalary) {
+        employeeID = id;
+        name = empName;
+        salary = empSalary;
+    }
+
+    void displayDetails() {
+        cout << "\nEmployee ID: " << employeeID << endl;
+        cout << "Name: " << name << endl;
+        cout << "Salary: Rs. " << salary << endl;
+    }
+
+    void increaseSalary(double amount) {
+        salary += amount;
+    }
+};
+
+// Derived class
+class Manager : public Employee {
+private:
+    string department;
+    int teamSize;
+
+public:
+    Manager(int id, string name, double salary,
+            string dept, int size)
+        : Employee(id, name, salary) {
+
+        department = dept;
+        teamSize = size;
+    }
+
+    void displayManagerDetails() {
+        displayDetails();
+
+        cout << "Department: " << department << endl;
+        cout << "Team Size: " << teamSize << endl;
+    }
+
+    void conductMeeting() {
+        cout << name << " is conducting a team meeting."
+             << endl;
+    }
+};
+
+// Another derived class
+class Developer : public Employee {
+private:
+    string programmingLanguage;
+    int projectsCompleted;
+
+public:
+    Developer(int id, string name, double salary,
+              string language, int projects)
+        : Employee(id, name, salary) {
+
+        programmingLanguage = language;
+        projectsCompleted = projects;
+    }
+
+    void displayDeveloperDetails() {
+        displayDetails();
+
+        cout << "Programming Language: "
+             << programmingLanguage << endl;
+
+        cout << "Projects Completed: "
+             << projectsCompleted << endl;
+    }
+
+    void writeCode() {
+        cout << name << " is writing code in "
+             << programmingLanguage << "." << endl;
+    }
+};
+
+int main() {
+
+    Manager manager1(101, "Anmol", 80000,
+                     "Development", 10);
+
+    Developer developer1(102, "Rahul", 60000,
+                         "C++", 5);
+
+    cout << "===== MANAGER DETAILS =====" << endl;
+
+    manager1.displayManagerDetails();
+    manager1.conductMeeting();
+
+    cout << "\n===== DEVELOPER DETAILS =====" << endl;
+
+    developer1.displayDeveloperDetails();
+    developer1.writeCode();
+
+    cout << "\n===== SALARY UPDATE =====" << endl;
+
+    manager1.increaseSalary(10000);
+    developer1.increaseSalary(5000);
+
+    cout << "\nUpdated Manager Salary: Rs. "
+         << "90000" << endl;
+
+    cout << "Updated Developer Salary: Rs. "
+         << "65000" << endl;
+
+    return 0;
+}
